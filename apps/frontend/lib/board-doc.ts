@@ -67,9 +67,8 @@ export function createLayer(
     case "ellipse":
       return { ...base, type };
     case "text":
-      return { ...base, type, value: "Text" };
     case "note":
-      return { ...base, type, value: "Note" };
+      return { ...base, type, value: "" };
   }
 }
 

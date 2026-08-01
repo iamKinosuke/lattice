@@ -12,12 +12,14 @@ import {
 } from "@lattice/shared";
 
 import { strokeToPathData } from "@/lib/stroke";
+import { textFont, textMetrics } from "@/lib/canvas-text";
 
 export const LAYER_NODE_NAME = "layer";
 
 type LayerNode = {
   readonly type: LayerType;
   readonly group: Konva.Group;
+  readonly text?: Konva.Text;
   readonly apply: (layer: Layer) => void;
 };
 
@@ -37,6 +39,10 @@ export class BoardRenderer {
 
   node(id: string): Konva.Group | undefined {
     return this.nodes.get(id)?.group;
+  }
+
+  textNode(id: string): Konva.Text | undefined {
+    return this.nodes.get(id)?.text;
   }
 
   destroy(): void {
@@ -182,14 +188,21 @@ function createLayerNode(id: string, layer: Layer): LayerNode {
       return {
         type: "text",
         group,
+        text,
         apply: (next) => {
           if (next.type !== "text") return;
           place(group, next);
+
+          const { fontSize, box, align } = textMetrics(next);
+
           text.setAttrs({
             text: next.value,
-            width: next.width,
-            height: next.height,
-            fontSize: fontSizeFor(next.width, next.height, TEXT_SCALE),
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+            align,
+            fontSize,
             fontFamily: textFont(),
             fill: colorToCss(next.fill),
           });
@@ -199,12 +212,13 @@ function createLayerNode(id: string, layer: Layer): LayerNode {
 
     case "note": {
       const background = new Konva.Rect({ cornerRadius: 4 });
-      const text = new Konva.Text({ verticalAlign: "middle", align: "center" });
+      const text = new Konva.Text({ verticalAlign: "middle" });
       group.add(background, text);
 
       return {
         type: "note",
         group,
+        text,
         apply: (next) => {
           if (next.type !== "note") return;
           place(group, next);
@@ -215,13 +229,16 @@ function createLayerNode(id: string, layer: Layer): LayerNode {
             fill: colorToCss(next.fill),
           });
 
+          const { fontSize, box, align } = textMetrics(next);
+
           text.setAttrs({
             text: next.value,
-            x: NOTE_PADDING,
-            y: NOTE_PADDING,
-            width: Math.max(0, next.width - NOTE_PADDING * 2),
-            height: Math.max(0, next.height - NOTE_PADDING * 2),
-            fontSize: fontSizeFor(next.width, next.height, NOTE_SCALE),
+            x: box.x,
+            y: box.y,
+            width: box.width,
+            height: box.height,
+            align,
+            fontSize,
             fontFamily: textFont(),
             fill: getContrastingTextColor(next.fill),
           });
@@ -236,29 +253,3 @@ function place(group: Konva.Group, layer: Layer): void {
   group.rotation(layer.rotation);
 }
 
-const NOTE_PADDING = 10;
-
-let cachedFont: string | null = null;
-
-function textFont(): string {
-  if (cachedFont !== null) return cachedFont;
-
-  const token = getComputedStyle(document.documentElement)
-    .getPropertyValue("--font-lattice-sans")
-    .trim();
-
-  cachedFont = token
-    ? `${token}, ui-sans-serif, system-ui, sans-serif`
-    : "ui-sans-serif, system-ui, sans-serif";
-
-  return cachedFont;
-}
-
-const MAX_FONT_SIZE = 96;
-
-const TEXT_SCALE = 0.35;
-const NOTE_SCALE = 0.15;
-
-function fontSizeFor(width: number, height: number, scale: number): number {
-  return Math.min(height * scale, width * scale, MAX_FONT_SIZE);
-}

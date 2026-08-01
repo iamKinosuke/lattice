@@ -14,6 +14,7 @@ import { PenCapture, pressureOf } from "@/lib/canvas-pen";
 import { BoardRenderer } from "@/lib/canvas-renderer";
 import { LAYER_NODE_NAME } from "@/lib/canvas-renderer";
 import { SelectionController } from "@/lib/canvas-selection";
+import { TextEditor } from "@/lib/canvas-text-editor";
 import { PresenceRenderer } from "@/lib/presence-renderer";
 import { createLayer, insertLayer } from "@/lib/board-doc";
 import { throttle } from "@/lib/throttle";
@@ -54,6 +55,7 @@ export function CanvasStage({
     const selection = new SelectionController(stage, doc, renderer);
     const pen = new PenCapture(stage);
     const presence = new PresenceRenderer(stage, doc, awareness);
+    const editor = new TextEditor(node, doc, renderer);
 
     selection.setScale(camera.scale);
     presence.setScale(camera.scale);
@@ -80,6 +82,7 @@ export function CanvasStage({
         stage.scale({ x: state.camera.scale, y: state.camera.scale });
         presence.setScale(state.camera.scale);
         selection.setScale(state.camera.scale);
+        editor.reflow(state.camera);
         stage.batchDraw();
       }
 
@@ -105,7 +108,10 @@ export function CanvasStage({
     };
     layerIds.observe(onOrderChanged);
 
-    const onDocChanged = () => selection.refresh();
+    const onDocChanged = () => {
+      selection.refresh();
+      editor.reflow(store.getState().camera);
+    };
     doc.on("update", onDocChanged);
 
     function pointerAt() {
@@ -137,9 +143,17 @@ export function CanvasStage({
       if (current.canvasState.mode === "inserting") {
         const layerType = current.canvasState.layerType;
 
-        if (insertLayer(doc, createLayer(layerType, at.canvas)) === null) return;
+        const id = insertLayer(doc, createLayer(layerType, at.canvas));
+        if (id === null) return;
 
         current.setCanvasState({ mode: "none" });
+
+        if (layerType === "text" || layerType === "note") {
+          requestAnimationFrame(() => {
+            if (!disposed) editor.open(id, store.getState().camera);
+          });
+        }
+
         return;
       }
 
@@ -170,6 +184,17 @@ export function CanvasStage({
       }
 
       if (!chosen.includes(id)) current.setSelection([id]);
+    });
+
+    stage.on("dblclick dbltap", (event) => {
+      const current = store.getState();
+      if (activeTool(current.canvasState) !== "select") return;
+
+      const hit = event.target.findAncestor(`.${LAYER_NODE_NAME}`, true) as
+        | Konva.Group
+        | undefined;
+
+      if (hit) editor.open(hit.id(), current.camera);
     });
 
     stage.on("pointermove", (event) => {
@@ -256,6 +281,7 @@ export function CanvasStage({
 
     return () => {
       disposed = true;
+      editor.destroy();
       unsubscribe();
       layerIds.unobserve(onOrderChanged);
       doc.off("update", onDocChanged);
