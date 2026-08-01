@@ -1,0 +1,30 @@
+node_modules/
+dist/
+.next/
+out/
+build/
+
+.env
+.env.local
+.env.*.local
+!.env.example
+
+*.log
+npm-debug.log*
+
+.DS_Store
+Thumbs.db
+
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+*.tsbuildinfo
+next-env.d.ts
+
+# uploaded board thumbnails (local dev)
+/apps/backend/storage/
+
+# Prisma client, generated from schema.prisma by `prisma generate` (postinstall).
+# prisma/migrations/ is NOT ignored — it is the history of the database.
+/apps/backend/src/generated/

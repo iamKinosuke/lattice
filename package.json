@@ -1,0 +1,31 @@
+{
+  "name": "lattice",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Realtime collaborative whiteboard — self-hosted CRDT sync server",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm run dev -w @lattice/backend\" \"npm run dev -w @lattice/frontend\"",
+    "dev:backend": "npm run dev -w @lattice/backend",
+    "dev:frontend": "npm run dev -w @lattice/frontend",
+    "build": "npm run build -w @lattice/backend && npm run build -w @lattice/frontend",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:migrate": "npm run db:migrate -w @lattice/backend",
+    "db:deploy": "npm run db:deploy -w @lattice/backend",
+    "db:status": "npm run db:status -w @lattice/backend",
+    "db:generate": "npm run db:generate -w @lattice/backend",
+    "db:studio": "npm run db:studio -w @lattice/backend"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}
