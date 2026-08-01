@@ -1,6 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 
-import { isProduction } from "../config/env.js";
 import { ApiError } from "../lib/api-error.js";
 import { logger } from "../lib/logger.js";
 
@@ -50,11 +49,5 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
     stack: error instanceof Error ? error.stack : undefined,
   });
 
-  res.status(500).json({
-    error: isProduction
-      ? "Internal server error"
-      : error instanceof Error
-        ? error.message
-        : "Internal server error",
-  });
+  res.status(500).json({ error: "Internal server error" });
 };

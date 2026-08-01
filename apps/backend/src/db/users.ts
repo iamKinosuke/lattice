@@ -3,8 +3,8 @@ import { randomBytes } from "node:crypto";
 import type { PublicUser } from "@lattice/shared";
 
 import { ApiError } from "../lib/api-error.js";
-import { Prisma } from "../generated/prisma/client.js";
 import { prisma } from "./prisma.js";
+import { violatesUniqueConstraint } from "./prisma-errors.js";
 
 type UserRow = {
   id: string;
@@ -60,7 +60,7 @@ export async function createUserWithPersonalWorkspace(input: {
 
       await tx.workspace.create({
         data: {
-          name: `${input.name}'s workspace`,
+          name: personalWorkspaceName(input.name),
           slug: personalWorkspaceSlug(input.name),
           ownerId: user.id,
           members: { create: { userId: user.id, role: "owner" } },
@@ -70,16 +70,20 @@ export async function createUserWithPersonalWorkspace(input: {
       return toPublicUser(user);
     });
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002" &&
-      /email/i.test(JSON.stringify(error.meta?.target ?? ""))
-    ) {
+    if (violatesUniqueConstraint(error, /email/i)) {
       throw new ApiError(409, "An account with that email already exists");
     }
 
     throw error;
   }
+}
+
+const WORKSPACE_NAME_MAX = 120;
+const WORKSPACE_NAME_SUFFIX = "'s workspace";
+
+function personalWorkspaceName(name: string): string {
+  const room = WORKSPACE_NAME_MAX - WORKSPACE_NAME_SUFFIX.length;
+  return `${name.slice(0, room)}${WORKSPACE_NAME_SUFFIX}`;
 }
 
 function personalWorkspaceSlug(name: string): string {
