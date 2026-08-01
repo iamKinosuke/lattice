@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+
+  runtime             = "nodejs"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           String   @id @default(uuid(4)) @db.Char(36)
+  email        String   @unique(map: "uq_users_email") @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  name         String   @db.VarChar(120)
+  avatarUrl    String?  @map("avatar_url") @db.VarChar(512)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+  memberships     WorkspaceMember[]
+  createdBoards   Board[]
+  favorites       BoardFavorite[]
+
+  @@map("users")
+}
+
+model Workspace {
+  id        String   @id @default(uuid(4)) @db.Char(36)
+  name      String   @db.VarChar(120)
+  slug      String   @unique(map: "uq_workspaces_slug") @db.VarChar(120)
+  ownerId   String   @map("owner_id") @db.Char(36)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  owner   User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade, map: "fk_workspaces_owner")
+  members WorkspaceMember[]
+  boards  Board[]
+
+  @@index([ownerId], map: "idx_workspaces_owner")
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  workspaceId String        @map("workspace_id") @db.Char(36)
+  userId      String        @map("user_id") @db.Char(36)
+  role        WorkspaceRole @default(member)
+  joinedAt    DateTime      @default(now()) @map("joined_at") @db.Timestamp(0)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, map: "fk_wm_workspace")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_wm_user")
+
+  @@id([workspaceId, userId])
+  @@index([userId], map: "idx_wm_user")
+  @@map("workspace_members")
+}
+
+enum WorkspaceRole {
+  owner
+  admin
+  member
+}
+
+model Board {
+  id            String   @id @default(uuid(4)) @db.Char(36)
+  workspaceId   String   @map("workspace_id") @db.Char(36)
+  title         String   @default("Untitled board") @db.VarChar(255)
+  thumbnailPath String?  @map("thumbnail_path") @db.VarChar(512)
+  createdBy     String   @map("created_by") @db.Char(36)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamp(0)
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade, map: "fk_boards_workspace")
+  creator   User            @relation(fields: [createdBy], references: [id], onDelete: Cascade, map: "fk_boards_created_by")
+  snapshot  BoardSnapshot?
+  favorites BoardFavorite[]
+
+  @@index([workspaceId, updatedAt(sort: Desc)], map: "idx_boards_workspace_updated")
+  @@index([createdBy], map: "idx_boards_created_by")
+  @@map("boards")
+}
+
+model BoardSnapshot {
+  boardId   String   @id @map("board_id") @db.Char(36)
+  state     Bytes
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade, map: "fk_snapshots_board")
+
+  @@map("board_snapshots")
+}
+
+model BoardFavorite {
+  userId    String   @map("user_id") @db.Char(36)
+  boardId   String   @map("board_id") @db.Char(36)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_favorites_user")
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade, map: "fk_favorites_board")
+
+  @@id([userId, boardId])
+  @@index([boardId], map: "idx_favorites_board")
+  @@map("board_favorites")
+}
