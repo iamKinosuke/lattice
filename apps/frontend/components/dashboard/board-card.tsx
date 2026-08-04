@@ -107,12 +107,16 @@ export function BoardCard({
             trigger={<MoreHorizontal size={18} strokeWidth={1.75} aria-hidden />}
             items={[
               { label: "Rename", icon: Pencil, onSelect: () => onRename(board) },
-              {
-                label: "Delete",
-                icon: Trash2,
-                danger: true,
-                onSelect: () => onDelete(board),
-              },
+              ...(board.canDelete
+                ? [
+                    {
+                      label: "Delete",
+                      icon: Trash2,
+                      danger: true,
+                      onSelect: () => onDelete(board),
+                    },
+                  ]
+                : []),
             ]}
           />
         </div>
