@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Star } from "lucide-react";
+import { ArrowLeft, Download, Star } from "lucide-react";
 
 import type { Board, PresenceUser } from "@lattice/shared";
 
@@ -16,6 +16,8 @@ export function BoardHeader({
   selfId,
   onRenamed,
   onToggleFavorite,
+  onExport,
+  exporting,
 }: {
   board: Board;
   status: SyncStatus;
@@ -23,6 +25,8 @@ export function BoardHeader({
   selfId: string | null;
   onRenamed: (board: Board) => void;
   onToggleFavorite: () => void;
+  onExport: () => void;
+  exporting: boolean;
 }) {
   return (
     <header className="z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-base px-2 sm:px-3">
@@ -44,6 +48,14 @@ export function BoardHeader({
           fill={board.isFavorite ? "currentColor" : "none"}
           aria-hidden
         />
+      </IconButton>
+
+      <IconButton
+        label="Export as PNG"
+        onClick={onExport}
+        disabled={exporting}
+      >
+        <Download size={17} strokeWidth={1.75} aria-hidden />
       </IconButton>
 
       <div className="ml-auto flex items-center gap-3 sm:gap-4">

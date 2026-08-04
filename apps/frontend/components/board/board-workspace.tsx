@@ -13,6 +13,11 @@ import { ZoomControls } from "@/components/board/zoom-controls";
 import { Spinner } from "@/components/ui/spinner";
 import { ApiClientError, api } from "@/lib/api";
 import { deleteLayers, useBoardDoc } from "@/lib/board-doc";
+import {
+  boardImageFilename,
+  downloadBlob,
+  exportBoardPng,
+} from "@/lib/canvas-export";
 import { useBoardSync } from "@/lib/board-sync";
 import { useCanvasStore } from "@/lib/canvas-store";
 import { useSession } from "@/lib/use-session";
@@ -27,6 +32,7 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
   const { user } = useSession();
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [actionError, setActionError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const resetView = useCanvasStore((store) => store.resetView);
   const setCanvasState = useCanvasStore((store) => store.setCanvasState);
@@ -173,6 +179,31 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
     }
   }
 
+  async function exportPng() {
+    setActionError(null);
+    setExporting(true);
+
+    try {
+      const result = await exportBoardPng();
+
+      if (result === "empty") {
+        setActionError("There is nothing on this board to export yet.");
+        return;
+      }
+
+      if (result === "unavailable") {
+        setActionError("The canvas is not ready yet — try again in a moment.");
+        return;
+      }
+
+      downloadBlob(result.blob, boardImageFilename(board.title));
+    } catch {
+      setActionError("Could not export this board.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className="flex h-dvh flex-1 flex-col overflow-hidden bg-base">
       <BoardHeader
@@ -182,6 +213,8 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
         selfId={user?.id ?? null}
         onRenamed={(updated) => setState({ kind: "ready", board: updated })}
         onToggleFavorite={toggleFavorite}
+        onExport={() => void exportPng()}
+        exporting={exporting}
       />
 
       {actionError ? (

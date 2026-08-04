@@ -13,6 +13,7 @@ import { useCanvasStore } from "@/lib/canvas-store";
 import { PenCapture, pressureOf } from "@/lib/canvas-pen";
 import { BoardRenderer } from "@/lib/canvas-renderer";
 import { LAYER_NODE_NAME } from "@/lib/canvas-renderer";
+import { registerBoardCanvas, releaseBoardCanvas } from "@/lib/canvas-export";
 import { SelectionController } from "@/lib/canvas-selection";
 import { TextEditor } from "@/lib/canvas-text-editor";
 import { PresenceRenderer } from "@/lib/presence-renderer";
@@ -56,6 +57,8 @@ export function CanvasStage({
     const pen = new PenCapture(stage);
     const presence = new PresenceRenderer(stage, doc, awareness);
     const editor = new TextEditor(node, doc, renderer);
+
+    registerBoardCanvas(stage, layer);
 
     selection.setScale(camera.scale);
     presence.setScale(camera.scale);
@@ -281,6 +284,7 @@ export function CanvasStage({
 
     return () => {
       disposed = true;
+      releaseBoardCanvas(stage);
       editor.destroy();
       unsubscribe();
       layerIds.unobserve(onOrderChanged);
