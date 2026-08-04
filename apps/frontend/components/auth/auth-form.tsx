@@ -206,7 +206,7 @@ export function AuthForm({ mode, next }: { mode: Mode; next: string }) {
       <p className="mt-8 text-base text-ink-muted">
         {copy.switchPrompt}{" "}
         <Link
-          href={copy.switchHref}
+          href={switchHref(copy.switchHref, next)}
           className="font-medium text-brand-text underline decoration-brand-text/30 underline-offset-2 transition-colors hover:decoration-brand-text"
         >
           {copy.switchLabel}
@@ -214,6 +214,12 @@ export function AuthForm({ mode, next }: { mode: Mode; next: string }) {
       </p>
     </div>
   );
+}
+
+function switchHref(base: string, next: string): string {
+  if (next === "/dashboard") return base;
+
+  return `${base}?next=${encodeURIComponent(next)}`;
 }
 
 function applyError(
