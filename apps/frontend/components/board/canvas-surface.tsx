@@ -6,7 +6,6 @@ import type { Awareness } from "y-protocols/awareness";
 import type * as Y from "yjs";
 
 import { useCanvasStore } from "@/lib/canvas-store";
-import { canvasToScreen } from "@/lib/canvas-math";
 
 const GRID_SPACING = 24;
 
@@ -73,8 +72,6 @@ export function CanvasSurface({
     return () => node.removeEventListener("wheel", onWheel);
   }, [zoomBy, setCamera]);
 
-  const origin = canvasToScreen({ x: 0, y: 0 }, camera);
-
   return (
     <div
       ref={ref}
@@ -86,12 +83,6 @@ export function CanvasSurface({
         backgroundPosition: `${camera.x}px ${camera.y}px`,
       }}
     >
-      <span
-        aria-hidden="true"
-        className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-brand/60"
-        style={{ left: origin.x, top: origin.y }}
-      />
-
       <CanvasStage doc={doc} awareness={awareness} />
     </div>
   );

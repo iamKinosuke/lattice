@@ -19,9 +19,12 @@ import {
 } from "@/components/dashboard/workspace-nav";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
+import { Spinner } from "@/components/ui/spinner";
 import { ApiClientError, api } from "@/lib/api";
 
 const NO_BOARDS: Board[] = [];
+
+const PENDING_DELAY_MS = 200;
 
 export function DashboardView({
   initialFilter,
@@ -52,13 +55,12 @@ export function DashboardView({
   const [deleteTarget, setDeleteTarget] = useState<Board | null>(null);
 
   const loadError = failure?.key === requestKey ? failure.message : null;
-  const fresh = data?.key === requestKey;
-  const boardsLoading = !fresh && loadError === null;
+  const pending = data?.key !== requestKey && loadError === null;
 
-  const boards = useMemo(
-    () => (data?.key === requestKey ? data.boards : NO_BOARDS),
-    [data, requestKey],
-  );
+  const boards = data?.boards ?? NO_BOARDS;
+
+  const showSkeleton = pending && data === null;
+  const showPending = useSlowRequest(pending, requestKey) && !showSkeleton;
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -204,9 +206,15 @@ export function DashboardView({
 
       <div className="flex min-w-0 flex-1 flex-col gap-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            {heading}
-          </h1>
+          <div className="flex min-w-0 items-center gap-2.5">
+            <h1 className="font-display truncate text-2xl font-semibold tracking-tight text-ink">
+              {heading}
+            </h1>
+
+            {showPending ? (
+              <Spinner className="shrink-0 text-base text-ink-subtle" />
+            ) : null}
+          </div>
 
           <Button
             onClick={createBoard}
@@ -242,7 +250,8 @@ export function DashboardView({
         ) : (
           <BoardGrid
             boards={boards}
-            loading={boardsLoading}
+            loading={showSkeleton}
+            pending={showPending}
             filter={filter}
             canCreate={targetWorkspaceId !== null}
             onCreate={createBoard}
@@ -298,4 +307,17 @@ function Banner({
 
 function isAbort(cause: unknown): boolean {
   return cause instanceof DOMException && cause.name === "AbortError";
+}
+
+function useSlowRequest(pending: boolean, key: string): boolean {
+  const [slowKey, setSlowKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!pending) return;
+
+    const timer = window.setTimeout(() => setSlowKey(key), PENDING_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [pending, key]);
+
+  return pending && slowKey === key;
 }

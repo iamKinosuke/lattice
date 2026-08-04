@@ -7,6 +7,7 @@ import type { Board, BoardFilter } from "@lattice/shared";
 
 import { BoardCard } from "@/components/dashboard/board-card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/cn";
 
 const LIST_LIMIT = 200;
 
@@ -16,6 +17,7 @@ const GRID =
 export function BoardGrid({
   boards,
   loading,
+  pending,
   filter,
   canCreate,
   onCreate,
@@ -25,6 +27,7 @@ export function BoardGrid({
 }: {
   boards: Board[];
   loading: boolean;
+  pending: boolean;
   filter: BoardFilter;
   canCreate: boolean;
   onCreate: () => void;
@@ -51,23 +54,29 @@ export function BoardGrid({
     );
   }
 
-  if (boards.length === 0) {
-    return <EmptyState filter={filter} canCreate={canCreate} onCreate={onCreate} />;
-  }
-
   return (
-    <div className="flex flex-col gap-6">
-      <ul className={GRID}>
-        {boards.map((board) => (
-          <BoardCard
-            key={board.id}
-            board={board}
-            onToggleFavorite={onToggleFavorite}
-            onRename={onRename}
-            onDelete={onDelete}
-          />
-        ))}
-      </ul>
+    <div
+      aria-busy={pending || undefined}
+      className={cn(
+        "flex flex-col gap-6 transition-opacity duration-200",
+        pending && "pointer-events-none opacity-50",
+      )}
+    >
+      {boards.length === 0 ? (
+        <EmptyState filter={filter} canCreate={canCreate} onCreate={onCreate} />
+      ) : (
+        <ul className={GRID}>
+          {boards.map((board) => (
+            <BoardCard
+              key={board.id}
+              board={board}
+              onToggleFavorite={onToggleFavorite}
+              onRename={onRename}
+              onDelete={onDelete}
+            />
+          ))}
+        </ul>
+      )}
 
       {boards.length >= LIST_LIMIT ? (
         <p className="text-sm text-ink-subtle">
