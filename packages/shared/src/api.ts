@@ -54,6 +54,30 @@ export type WorkspaceListResponse = {
   workspaces: Workspace[];
 };
 
+export type WorkspaceMember = {
+  userId: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  role: WorkspaceRole;
+  joinedAt: string;
+};
+
+export type WorkspaceMemberListResponse = {
+  members: WorkspaceMember[];
+};
+
+export type AddWorkspaceMemberBody = {
+  email: string;
+  role: WorkspaceRole;
+};
+
+export type SetWorkspaceRoleBody = {
+  role: WorkspaceRole;
+};
+
+export type BoardRole = "editor" | "viewer";
+
 export type Board = {
   id: string;
   workspaceId: string;
@@ -62,8 +86,32 @@ export type Board = {
   createdBy: string;
   createdByName: string;
   isFavorite: boolean;
+  canShare: boolean;
+  canDelete: boolean;
   createdAt: string;
   updatedAt: string;
+};
+
+export type BoardMember = {
+  userId: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  role: BoardRole;
+  createdAt: string;
+};
+
+export type BoardMemberListResponse = {
+  members: BoardMember[];
+};
+
+export type AddBoardMemberBody = {
+  email: string;
+  role: BoardRole;
+};
+
+export type SetBoardRoleBody = {
+  role: BoardRole;
 };
 
 export type CreateBoardBody = {

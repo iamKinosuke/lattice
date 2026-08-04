@@ -54,6 +54,18 @@ CREATE TABLE `board_snapshots` (
     PRIMARY KEY (`board_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+CREATE TABLE `board_members` (
+    `board_id` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    `user_id` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    `role` ENUM('editor', 'viewer') NOT NULL DEFAULT 'editor',
+    `invited_by` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+    `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+
+    INDEX `idx_bm_user`(`user_id`),
+    INDEX `idx_bm_invited_by`(`invited_by`),
+    PRIMARY KEY (`board_id`, `user_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 CREATE TABLE `board_favorites` (
     `user_id` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
     `board_id` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
@@ -74,6 +86,12 @@ ALTER TABLE `boards` ADD CONSTRAINT `fk_boards_workspace` FOREIGN KEY (`workspac
 ALTER TABLE `boards` ADD CONSTRAINT `fk_boards_created_by` FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `board_snapshots` ADD CONSTRAINT `fk_snapshots_board` FOREIGN KEY (`board_id`) REFERENCES `boards`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `board_members` ADD CONSTRAINT `fk_bm_board` FOREIGN KEY (`board_id`) REFERENCES `boards`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `board_members` ADD CONSTRAINT `fk_bm_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `board_members` ADD CONSTRAINT `fk_bm_invited_by` FOREIGN KEY (`invited_by`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `board_favorites` ADD CONSTRAINT `fk_favorites_user` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 

@@ -1,29 +1,42 @@
 import { Router } from "express";
 import { z } from "zod";
 
-import type { BoardListResponse, WorkspaceRole } from "@lattice/shared";
+import type {
+  BoardListResponse,
+  BoardMemberListResponse,
+} from "@lattice/shared";
 
 import {
+  addBoardMember,
   createBoard,
   deleteBoard,
   findBoardAccess,
-  findBoardCreator,
   findBoardForUser,
+  listBoardMembers,
   listBoards,
+  mayDeleteBoard,
+  mayShareBoard,
+  removeBoardMember,
   renameBoard,
   setBoardFavorite,
+  setBoardMemberRole,
 } from "../db/boards.js";
 import { findWorkspaceMembership } from "../db/workspaces.js";
 import { ApiError } from "../lib/api-error.js";
 import { logger } from "../lib/logger.js";
 import { currentUser, requireAuth } from "../middleware/auth.js";
-import { boardTitleField, parseBody } from "../middleware/validate.js";
+import {
+  boardTitleField,
+  emailField,
+  parseBody,
+} from "../middleware/validate.js";
 
 export const boardRouter = Router();
 
 boardRouter.use(requireAuth);
 
 type BoardParams = { boardId: string };
+type MemberParams = BoardParams & { userId: string };
 
 const filterSchema = z
   .enum(["recent", "owned", "shared", "favorites"])
@@ -42,6 +55,19 @@ const createSchema = z.object({
 const renameSchema = z.object({ title: boardTitleField });
 
 const favoriteSchema = z.object({ favorite: z.boolean() });
+
+const boardRoleSchema = z
+  .enum(["editor", "viewer"])
+  .refine((role) => role === "editor", {
+    message: "Only the editor role is available yet",
+  });
+
+const addMemberSchema = z.object({
+  email: emailField,
+  role: boardRoleSchema.default("editor"),
+});
+
+const setRoleSchema = z.object({ role: boardRoleSchema });
 
 boardRouter.get("/", async (req, res) => {
   const user = currentUser(req);
@@ -109,11 +135,8 @@ boardRouter.delete<BoardParams>("/:boardId", async (req, res) => {
   const { boardId } = req.params;
 
   const access = await requireBoardAccess(boardId, user.id);
-  const board = await findBoardCreator(boardId);
 
-  const mayDelete = isAtLeastAdmin(access.role) || board?.createdBy === user.id;
-
-  if (!mayDelete) {
+  if (!mayDeleteBoard(access, user.id)) {
     throw new ApiError(
       403,
       "Only the board's creator or a workspace admin can delete it",
@@ -126,6 +149,74 @@ boardRouter.delete<BoardParams>("/:boardId", async (req, res) => {
   res.status(204).end();
 });
 
+boardRouter.get<BoardParams>("/:boardId/members", async (req, res) => {
+  const user = currentUser(req);
+
+  await requireBoardAccess(req.params.boardId, user.id);
+
+  const members = await listBoardMembers(req.params.boardId);
+
+  const body: BoardMemberListResponse = { members };
+  res.json(body);
+});
+
+boardRouter.post<BoardParams>("/:boardId/members", async (req, res) => {
+  const user = currentUser(req);
+  const { boardId } = req.params;
+  const body = parseBody(addMemberSchema, req.body);
+
+  const access = await requireShare(boardId, user.id);
+
+  const member = await addBoardMember({
+    boardId,
+    workspaceId: access.workspaceId,
+    email: body.email,
+    role: body.role,
+    invitedBy: user.id,
+  });
+
+  logger.info("board member added", {
+    boardId,
+    userId: member.userId,
+    by: user.id,
+  });
+
+  res.status(201).json(member);
+});
+
+boardRouter.patch<MemberParams>(
+  "/:boardId/members/:userId",
+  async (req, res) => {
+    const user = currentUser(req);
+    const body = parseBody(setRoleSchema, req.body);
+
+    await requireShare(req.params.boardId, user.id);
+
+    const member = await setBoardMemberRole(
+      req.params.boardId,
+      req.params.userId,
+      body.role,
+    );
+
+    res.json(member);
+  },
+);
+
+boardRouter.delete<MemberParams>(
+  "/:boardId/members/:userId",
+  async (req, res) => {
+    const user = currentUser(req);
+    const { boardId, userId } = req.params;
+
+    await requireShare(boardId, user.id);
+    await removeBoardMember(boardId, userId);
+
+    logger.info("board member removed", { boardId, userId, by: user.id });
+
+    res.status(204).end();
+  },
+);
+
 async function requireBoardAccess(boardId: string, userId: string) {
   const access = await findBoardAccess(boardId, userId);
 
@@ -136,6 +227,15 @@ async function requireBoardAccess(boardId: string, userId: string) {
   return access;
 }
 
-function isAtLeastAdmin(role: WorkspaceRole): boolean {
-  return role === "owner" || role === "admin";
+async function requireShare(boardId: string, userId: string) {
+  const access = await requireBoardAccess(boardId, userId);
+
+  if (!mayShareBoard(access, userId)) {
+    throw new ApiError(
+      403,
+      "Only the board's creator or a workspace admin can share it",
+    );
+  }
+
+  return access;
 }
