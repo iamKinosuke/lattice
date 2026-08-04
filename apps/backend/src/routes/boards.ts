@@ -30,6 +30,7 @@ import {
   emailField,
   parseBody,
 } from "../middleware/validate.js";
+import { disconnectUserFromBoard } from "../ws/room.js";
 
 export const boardRouter = Router();
 
@@ -210,6 +211,7 @@ boardRouter.delete<MemberParams>(
 
     await requireShare(boardId, user.id);
     await removeBoardMember(boardId, userId);
+    await disconnectUserFromBoard(boardId, userId);
 
     logger.info("board member removed", { boardId, userId, by: user.id });
 

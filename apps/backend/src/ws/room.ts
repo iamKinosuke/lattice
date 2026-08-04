@@ -9,11 +9,17 @@ import { encodeAwareness, encodeSyncStep1, encodeUpdate } from "./protocol.js";
 
 const PERSISTENCE_ORIGIN = Symbol("persistence");
 
+type Connection = {
+  userId: string;
+  clients: Set<number>;
+};
+
 export type Room = {
   boardId: string;
+  workspaceId: string;
   doc: Y.Doc;
   awareness: Awareness;
-  conns: Map<WebSocket, Set<number>>;
+  conns: Map<WebSocket, Connection>;
   dirty: boolean;
   snapshotTimer: NodeJS.Timeout | null;
   evictionTimer: NodeJS.Timeout | null;
@@ -23,11 +29,11 @@ const rooms = new Map<string, Promise<Room>>();
 
 let liveConnectionCount = 0;
 
-export function getRoom(boardId: string): Promise<Room> {
+export function getRoom(boardId: string, workspaceId: string): Promise<Room> {
   let pending = rooms.get(boardId);
 
   if (!pending) {
-    pending = createRoom(boardId);
+    pending = createRoom(boardId, workspaceId);
     rooms.set(boardId, pending);
     pending.catch(() => rooms.delete(boardId));
   }
@@ -35,7 +41,10 @@ export function getRoom(boardId: string): Promise<Room> {
   return pending;
 }
 
-async function createRoom(boardId: string): Promise<Room> {
+async function createRoom(
+  boardId: string,
+  workspaceId: string,
+): Promise<Room> {
   const doc = new Y.Doc();
 
   const snapshot = await loadSnapshot(boardId);
@@ -48,6 +57,7 @@ async function createRoom(boardId: string): Promise<Room> {
 
   const room: Room = {
     boardId,
+    workspaceId,
     doc,
     awareness,
     conns: new Map(),
@@ -70,10 +80,10 @@ async function createRoom(boardId: string): Promise<Room> {
       const { added, updated, removed } = changes;
 
       if (origin && typeof origin === "object") {
-        const controlled = room.conns.get(origin as WebSocket);
-        if (controlled) {
-          for (const id of added) controlled.add(id);
-          for (const id of removed) controlled.delete(id);
+        const connection = room.conns.get(origin as WebSocket);
+        if (connection) {
+          for (const id of added) connection.clients.add(id);
+          for (const id of removed) connection.clients.delete(id);
         }
       }
 
@@ -88,8 +98,12 @@ async function createRoom(boardId: string): Promise<Room> {
   return room;
 }
 
-export function addConnection(room: Room, ws: WebSocket): void {
-  room.conns.set(ws, new Set());
+export function addConnection(
+  room: Room,
+  ws: WebSocket,
+  userId: string,
+): void {
+  room.conns.set(ws, { userId, clients: new Set() });
   liveConnectionCount += 1;
 
   if (room.evictionTimer) {
@@ -111,11 +125,11 @@ export function addConnection(room: Room, ws: WebSocket): void {
 }
 
 export function removeConnection(room: Room, ws: WebSocket): void {
-  const controlled = room.conns.get(ws);
+  const connection = room.conns.get(ws);
   dropConnection(room, ws);
 
-  if (controlled && controlled.size > 0) {
-    removeAwarenessStates(room.awareness, [...controlled], null);
+  if (connection && connection.clients.size > 0) {
+    removeAwarenessStates(room.awareness, [...connection.clients], null);
   }
 
   logger.debug("connection removed", {
@@ -211,6 +225,64 @@ async function evict(room: Room): Promise<void> {
   room.doc.destroy();
 
   logger.info("room evicted", { boardId: room.boardId });
+}
+
+const REVOKED = 1008;
+
+export async function disconnectUserFromBoard(
+  boardId: string,
+  userId: string,
+): Promise<number> {
+  const room = await openRoom(boardId);
+  return room ? closeUserSockets(room, userId) : 0;
+}
+
+export async function disconnectUserFromWorkspace(
+  workspaceId: string,
+  userId: string,
+): Promise<number> {
+  let closed = 0;
+
+  for (const boardId of [...rooms.keys()]) {
+    const room = await openRoom(boardId);
+    if (room?.workspaceId !== workspaceId) continue;
+
+    closed += closeUserSockets(room, userId);
+  }
+
+  return closed;
+}
+
+async function openRoom(boardId: string): Promise<Room | null> {
+  const pending = rooms.get(boardId);
+  if (!pending) return null;
+
+  try {
+    return await pending;
+  } catch {
+    return null;
+  }
+}
+
+function closeUserSockets(room: Room, userId: string): number {
+  let closed = 0;
+
+  for (const [ws, connection] of [...room.conns]) {
+    if (connection.userId !== userId) continue;
+
+    ws.close(REVOKED, "access revoked");
+    closed += 1;
+  }
+
+  if (closed > 0) {
+    logger.info("closed sockets after revocation", {
+      boardId: room.boardId,
+      userId,
+      closed,
+    });
+  }
+
+  return closed;
 }
 
 export function getRoomStats(): { rooms: number; connections: number } {

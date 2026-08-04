@@ -61,7 +61,7 @@ async function handleUpgrade(
 
   let room: Room;
   try {
-    room = await getRoom(boardId);
+    room = await getRoom(boardId, access.workspaceId);
   } catch (error) {
     logger.error("failed to open room", {
       boardId,
@@ -78,7 +78,7 @@ async function handleUpgrade(
 }
 
 function setupSocket(ws: WebSocket, room: Room, userId: string): void {
-  addConnection(room, ws);
+  addConnection(room, ws, userId);
 
   const state: SocketState = {
     room,

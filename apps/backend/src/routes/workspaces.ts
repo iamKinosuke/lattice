@@ -20,6 +20,7 @@ import { ApiError } from "../lib/api-error.js";
 import { logger } from "../lib/logger.js";
 import { currentUser, requireAuth } from "../middleware/auth.js";
 import { emailField, parseBody } from "../middleware/validate.js";
+import { disconnectUserFromWorkspace } from "../ws/room.js";
 
 export const workspaceRouter = Router();
 
@@ -124,6 +125,7 @@ workspaceRouter.delete<MemberParams>(
     await requireOwnerForOwnerChanges(workspaceId, userId, "member", role);
 
     await removeWorkspaceMember(workspaceId, userId);
+    await disconnectUserFromWorkspace(workspaceId, userId);
 
     logger.info("workspace member removed", {
       workspaceId,
