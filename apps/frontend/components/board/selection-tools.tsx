@@ -55,14 +55,14 @@ export function SelectionTools({ doc }: { doc: Y.Doc }) {
         label="Bring to front"
         onClick={() => reorderLayers(doc, selection, "front")}
       >
-        <BringToFront size={17} strokeWidth={1.75} aria-hidden />
+        <BringToFront size={19} strokeWidth={1.75} aria-hidden />
       </Action>
 
       <Action
         label="Send to back"
         onClick={() => reorderLayers(doc, selection, "back")}
       >
-        <SendToBack size={17} strokeWidth={1.75} aria-hidden />
+        <SendToBack size={19} strokeWidth={1.75} aria-hidden />
       </Action>
 
       <span aria-hidden className="mx-1 h-6 w-px shrink-0 bg-line" />
@@ -75,7 +75,7 @@ export function SelectionTools({ doc }: { doc: Y.Doc }) {
           setSelection([]);
         }}
       >
-        <Trash2 size={17} strokeWidth={1.75} aria-hidden />
+        <Trash2 size={19} strokeWidth={1.75} aria-hidden />
       </Action>
     </div>
   );

@@ -34,7 +34,7 @@ export function UserMenu({ user }: { user: PublicUser | null }) {
 
       <Menu
         label="Account menu"
-        trigger={<ChevronDown size={16} strokeWidth={2} aria-hidden />}
+        trigger={<ChevronDown size={18} strokeWidth={2} aria-hidden />}
         items={[{ label: "Sign out", icon: LogOut, onSelect: signOut }]}
       />
     </div>

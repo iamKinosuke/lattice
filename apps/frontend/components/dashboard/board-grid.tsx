@@ -123,7 +123,7 @@ function EmptyState({
   return (
     <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-line-strong bg-surface/50 px-6 py-16 text-center">
       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-raised text-ink-subtle">
-        <Icon size={22} strokeWidth={1.5} aria-hidden />
+        <Icon size={25} strokeWidth={1.5} aria-hidden />
       </span>
 
       <div className="flex max-w-sm flex-col gap-1.5">
@@ -135,7 +135,7 @@ function EmptyState({
 
       {cta ? (
         <Button onClick={onCreate} disabled={!canCreate} className="mt-1">
-          <Plus size={17} strokeWidth={2} aria-hidden />
+          <Plus size={19} strokeWidth={2} aria-hidden />
           New board
         </Button>
       ) : null}

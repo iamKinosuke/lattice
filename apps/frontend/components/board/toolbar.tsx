@@ -98,7 +98,7 @@ export function Toolbar() {
                 : "text-ink-muted hover:bg-raised hover:text-ink",
             )}
           >
-            <Icon size={18} strokeWidth={1.75} aria-hidden />
+            <Icon size={20} strokeWidth={1.75} aria-hidden />
             <span className="sr-only">{tool.label}</span>
           </button>
         );

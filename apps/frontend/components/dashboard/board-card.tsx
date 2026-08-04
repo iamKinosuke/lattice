@@ -94,7 +94,7 @@ export function BoardCard({
           onClick={() => onToggleFavorite(board)}
         >
           <Star
-            size={16}
+            size={18}
             strokeWidth={1.75}
             fill={board.isFavorite ? "currentColor" : "none"}
             aria-hidden
@@ -104,7 +104,7 @@ export function BoardCard({
         <div className="rounded-md border border-line bg-surface/90 shadow-sm backdrop-blur">
           <Menu
             label={`Actions for ${board.title}`}
-            trigger={<MoreHorizontal size={16} strokeWidth={1.75} aria-hidden />}
+            trigger={<MoreHorizontal size={18} strokeWidth={1.75} aria-hidden />}
             items={[
               { label: "Rename", icon: Pencil, onSelect: () => onRename(board) },
               {

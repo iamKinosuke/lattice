@@ -20,7 +20,7 @@ export function ZoomControls() {
       aria-label="Zoom"
     >
       <Control label="Zoom out" onClick={zoomOut} disabled={atMin}>
-        <ZoomOut size={17} strokeWidth={1.75} aria-hidden />
+        <ZoomOut size={19} strokeWidth={1.75} aria-hidden />
       </Control>
 
       <button
@@ -34,13 +34,13 @@ export function ZoomControls() {
       </button>
 
       <Control label="Zoom in" onClick={zoomIn} disabled={atMax}>
-        <ZoomIn size={17} strokeWidth={1.75} aria-hidden />
+        <ZoomIn size={19} strokeWidth={1.75} aria-hidden />
       </Control>
 
       <span aria-hidden className="mx-0.5 h-6 w-px bg-line" />
 
       <Control label="Reset view" onClick={resetView}>
-        <Maximize2 size={16} strokeWidth={1.75} aria-hidden />
+        <Maximize2 size={18} strokeWidth={1.75} aria-hidden />
       </Control>
     </div>
   );

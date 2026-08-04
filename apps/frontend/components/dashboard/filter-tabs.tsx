@@ -46,7 +46,7 @@ export function FilterTabs({
                 : "text-ink-muted hover:bg-raised hover:text-ink",
             )}
           >
-            <Icon size={15} strokeWidth={1.75} aria-hidden />
+            <Icon size={17} strokeWidth={1.75} aria-hidden />
             {label}
           </button>
         );

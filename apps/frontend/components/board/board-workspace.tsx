@@ -137,7 +137,7 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
 
   if (state.kind === "loading") {
     return (
-      <div className="flex min-h-dvh flex-1 items-center justify-center bg-base">
+      <div className="flex min-h-dvh flex-1 items-center justify-center bg-page">
         <p className="flex items-center gap-2 text-sm text-ink-muted">
           <Spinner />
           Opening board…
@@ -205,7 +205,7 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
   }
 
   return (
-    <div className="flex h-dvh flex-1 flex-col overflow-hidden bg-base">
+    <div className="flex h-dvh flex-1 flex-col overflow-hidden bg-page">
       <BoardHeader
         board={board}
         status={status}

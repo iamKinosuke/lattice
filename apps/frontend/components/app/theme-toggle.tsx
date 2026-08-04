@@ -40,7 +40,7 @@ export function ThemeToggle({
       variant={variant}
       onClick={() => setTheme(nextTheme(theme))}
     >
-      <Icon size={17} strokeWidth={1.75} aria-hidden />
+      <Icon size={19} strokeWidth={1.75} aria-hidden />
     </IconButton>
   );
 }

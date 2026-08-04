@@ -120,7 +120,7 @@
 }
 
 @theme inline {
-  --color-base: var(--lat-base);
+  --color-page: var(--lat-base);
   --color-surface: var(--lat-surface);
   --color-raised: var(--lat-raised);
   --color-sunken: var(--lat-sunken);
@@ -164,6 +164,10 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+}
+
+html {
+  font-size: 112.5%;
 }
 
 body {

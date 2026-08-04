@@ -36,22 +36,21 @@ export default function AuthLayout({
             <br />
             Many cursors.
           </h2>
-          <p className="mt-5 text-[1rem] leading-relaxed text-ink-muted">
-            Lattice is a collaborative whiteboard whose sync server is part of the
-            project, not a service it rents. Edits merge as a lattice join — so
-            they converge no matter what order they arrive in, and no server has to
-            decide who was first.
+          <p className="mt-5 text-lg leading-relaxed text-ink-muted">
+            Sketch with your team in the same moment. Everybody draws at once,
+            nothing is locked while someone else is holding it, and the board
+            looks the same on every screen.
           </p>
 
           <ul className="mt-8 flex flex-col gap-3">
             {[
-              "Self-hosted CRDT sync over WebSocket",
-              "Cursors and selection broadcast, never stored",
-              "Boards restored exactly from the last snapshot",
+              "Cursors carry names, so you can see what everyone is looking at",
+              "Undo takes back your own work, not your teammate's",
+              "Boards save themselves — close the tab and come back later",
             ].map((line) => (
               <li key={line} className="flex items-start gap-3">
                 <Logo className="mt-0.5 h-4 w-4 shrink-0 text-brand-text" />
-                <span className="text-sm leading-relaxed text-ink-muted">
+                <span className="text-base leading-relaxed text-ink-muted">
                   {line}
                 </span>
               </li>
@@ -59,12 +58,12 @@ export default function AuthLayout({
           </ul>
         </div>
 
-        <p className="relative z-10 text-[0.8125rem] text-ink-subtle">
-          Yjs · Express · MySQL · Konva · one EC2 box
+        <p className="relative z-10 text-sm text-ink-subtle">
+          Runs in your browser. Nothing to install.
         </p>
       </aside>
 
-      <main className="flex flex-1 flex-col justify-center bg-base px-6 py-12 sm:px-12">
+      <main className="flex flex-1 flex-col justify-center bg-page px-6 py-12 sm:px-12">
         <div className="mx-auto w-full max-w-sm">
           <Link
             href="/"

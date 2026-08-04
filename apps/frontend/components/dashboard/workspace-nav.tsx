@@ -31,7 +31,7 @@ export function WorkspaceSidebar({
       <ScopeButton
         active={value === null}
         onClick={() => onChange(null)}
-        icon={<LayoutGrid size={16} strokeWidth={1.75} aria-hidden />}
+        icon={<LayoutGrid size={18} strokeWidth={1.75} aria-hidden />}
         label="All boards"
       />
 
@@ -46,9 +46,9 @@ export function WorkspaceSidebar({
               onClick={() => onChange(workspace.id)}
               icon={
                 workspace.memberCount > 1 ? (
-                  <Users size={16} strokeWidth={1.75} aria-hidden />
+                  <Users size={18} strokeWidth={1.75} aria-hidden />
                 ) : (
-                  <Lock size={16} strokeWidth={1.75} aria-hidden />
+                  <Lock size={18} strokeWidth={1.75} aria-hidden />
                 )
               }
               label={workspace.name}
@@ -115,7 +115,7 @@ export function WorkspaceSelect({
         id={selectId}
         value={value ?? ""}
         onChange={(event) => onChange(event.target.value || null)}
-        className="h-11 w-full cursor-pointer rounded-md border border-line bg-surface px-3 text-[1rem] text-ink"
+        className="h-11 w-full cursor-pointer rounded-md border border-line bg-surface px-3 text-base text-ink"
       >
         <option value="">All boards</option>
         {workspaces.map((workspace) => (

@@ -140,7 +140,7 @@ export function AuthForm({ mode, next }: { mode: Mode; next: string }) {
       <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
         {copy.heading}
       </h1>
-      <p className="mt-2 text-[0.9375rem] text-ink-muted">{copy.subheading}</p>
+      <p className="mt-2 text-base text-ink-muted">{copy.subheading}</p>
 
       <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-5">
         {formError ? (
@@ -203,7 +203,7 @@ export function AuthForm({ mode, next }: { mode: Mode; next: string }) {
         </Button>
       </form>
 
-      <p className="mt-8 text-sm text-ink-muted">
+      <p className="mt-8 text-base text-ink-muted">
         {copy.switchPrompt}{" "}
         <Link
           href={copy.switchHref}

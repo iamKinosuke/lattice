@@ -171,7 +171,7 @@ export function Menu({
                     : "text-ink hover:bg-raised",
                 )}
               >
-                {Icon ? <Icon size={16} strokeWidth={1.75} aria-hidden /> : null}
+                {Icon ? <Icon size={18} strokeWidth={1.75} aria-hidden /> : null}
                 {item.label}
               </button>
             );

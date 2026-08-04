@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s · Lattice",
   },
   description:
-    "A realtime collaborative whiteboard with a self-hosted CRDT sync server.",
+    "A collaborative whiteboard where your whole team can draw at the same time.",
 };
 
 export const viewport: Viewport = {

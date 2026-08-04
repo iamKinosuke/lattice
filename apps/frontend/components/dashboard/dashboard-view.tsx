@@ -213,7 +213,7 @@ export function DashboardView({
             loading={creating}
             disabled={!targetWorkspaceId}
           >
-            <Plus size={17} strokeWidth={2} aria-hidden />
+            <Plus size={19} strokeWidth={2} aria-hidden />
             New board
           </Button>
         </div>
@@ -277,7 +277,7 @@ function Banner({
   return (
     <div className="flex items-start gap-2.5 rounded-lg border border-danger/40 bg-danger-wash px-3.5 py-3">
       <AlertCircle
-        size={16}
+        size={18}
         strokeWidth={1.75}
         aria-hidden
         className="mt-0.5 shrink-0 text-danger-text"
@@ -290,7 +290,7 @@ function Banner({
         onClick={onDismiss}
         className="-my-1.5 -mr-1.5 h-7 w-7 text-danger-text hover:bg-danger/10 hover:text-danger-text"
       >
-        <X size={14} strokeWidth={2} aria-hidden />
+        <X size={16} strokeWidth={2} aria-hidden />
       </IconButton>
     </div>
   );

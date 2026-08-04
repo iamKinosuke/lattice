@@ -4,43 +4,40 @@ import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Logo, Wordmark } from "@/components/brand/logo";
 import { ButtonLink } from "@/components/ui/button";
 
-const BUILT = [
+const TOGETHER = [
   {
-    title: "Sync that is written, not rented",
-    body: "The Yjs wire protocol is implemented against y-protocols in apps/backend/src/ws — handshake, awareness framing and room lifecycle are project code, not a hosted service.",
+    title: "Nobody waits their turn",
+    body: "Everyone draws at the same time. Nothing is locked while someone else is holding it, and every screen ends up showing the same board.",
   },
   {
-    title: "Edits converge in any order",
-    body: "CRDTs form a join-semilattice, and merging replicas is the lattice join: commutative, associative, idempotent. No server has to decide who moved the rectangle first.",
+    title: "Your undo stays yours",
+    body: "Undo takes back the last thing you did — not whatever a teammate changed a second ago somewhere else on the canvas.",
   },
   {
-    title: "Boards survive a restart",
-    body: "One Y.Doc per board, loaded from MySQL on the first join and evicted after the last client leaves. Stop the server mid-drawing and the board comes back.",
+    title: "Nothing to save",
+    body: "Close the tab, lose your connection, come back tomorrow. The board is where you left it, and it reconnects on its own.",
   },
 ];
 
-const STATE = [
+const CANVAS = [
   {
-    kind: "Shape data",
-    home: "Y.Doc",
-    body: "Has to merge across clients, so it never enters React state.",
+    title: "Draw it however you think",
+    body: "Freehand pen, rectangles and ellipses, text anywhere, sticky notes wherever they belong. Recolour anything, and push it in front of or behind the rest.",
   },
   {
-    kind: "Tool and zoom",
-    home: "Zustand",
-    body: "Local to your own window. Never synced, never persisted.",
+    title: "See what everyone is doing",
+    body: "Cursors carry the name of the person moving them, and you watch a teammate's line appear as they draw it rather than after they finish.",
   },
   {
-    kind: "Cursors",
-    home: "Yjs awareness",
-    body: "Ephemeral by design — broadcast to peers, never written to MySQL.",
+    title: "Take the board with you",
+    body: "Export the canvas as an image in one click — the whole board, not just the part that happens to be on your screen.",
   },
 ];
 
 export default function RootPage() {
   return (
-    <div className="flex min-h-dvh flex-1 flex-col bg-base">
-      <header className="sticky top-0 z-30 border-b border-line bg-base/85 backdrop-blur">
+    <div className="flex min-h-dvh flex-1 flex-col bg-page">
+      <header className="sticky top-0 z-30 border-b border-line bg-page/85 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href="/" className="rounded-md text-ink">
             <Wordmark />
@@ -77,21 +74,21 @@ export default function RootPage() {
 
           <div className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3 py-1 text-xs font-medium text-ink-muted backdrop-blur">
+              <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3.5 py-1.5 text-sm font-medium text-ink-muted backdrop-blur">
                 <Logo className="h-3.5 w-3.5 text-brand" />
-                Self-hosted realtime, no collaboration SaaS
+                Runs in your browser — nothing to install
               </span>
 
               <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink sm:text-6xl">
-                A whiteboard that
+                One whiteboard.
                 <br />
-                owns its sync server.
+                Everyone at once.
               </h1>
 
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
-                Many people drawing on one canvas at the same time. The realtime
-                layer — CRDT merge, presence, persistence — is part of this
-                project rather than a service it pays for.
+              <p className="mt-6 max-w-xl text-xl leading-relaxed text-ink-muted">
+                Sketch, arrange and annotate with your team in the same moment.
+                Cursors move as people move them, lines appear as they are drawn,
+                and everybody is looking at the same board.
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -105,21 +102,21 @@ export default function RootPage() {
         </section>
 
         <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-          <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
-            What is actually built
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">
+            Made for working at the same time
           </h2>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            {BUILT.map((item) => (
+            {TOGETHER.map((item) => (
               <article
                 key={item.title}
-                className="rounded-xl border border-line bg-surface p-5 shadow-sm"
+                className="rounded-xl border border-line bg-surface p-6 shadow-sm"
               >
                 <Logo className="h-5 w-5 text-brand" />
-                <h3 className="mt-4 font-display text-[1rem] font-semibold tracking-tight text-ink">
+                <h3 className="mt-4 font-display text-lg font-semibold tracking-tight text-ink">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-muted">
+                <p className="mt-2 text-base leading-relaxed text-ink-muted">
                   {item.body}
                 </p>
               </article>
@@ -129,42 +126,37 @@ export default function RootPage() {
 
         <section className="border-t border-line bg-sunken">
           <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-            <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
-              Three kinds of state, kept apart
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">
+              Everything the canvas gives you
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">
-              Conflating them is what makes a collaborative canvas feel janky. A
-              drag writes straight to the Konva node and commits to the CRDT on
-              release, so no network round trip sits inside the drag loop.
+            <p className="mt-3 max-w-xl text-lg leading-relaxed text-ink-muted">
+              Dragging stays smooth however many people are on the board, because
+              your own moves are drawn the instant you make them.
             </p>
 
-            <dl className="mt-8 grid gap-4 sm:grid-cols-3">
-              {STATE.map((item) => (
-                <div
-                  key={item.kind}
-                  className="rounded-xl border border-line bg-base p-5"
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {CANVAS.map((item) => (
+                <article
+                  key={item.title}
+                  className="rounded-xl border border-line bg-page p-6"
                 >
-                  <dt className="flex items-baseline justify-between gap-2">
-                    <span className="text-sm font-medium text-ink">
-                      {item.kind}
-                    </span>
-                    <code className="rounded bg-brand-wash px-1.5 py-0.5 text-xs font-medium text-brand-text">
-                      {item.home}
-                    </code>
-                  </dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-ink-muted">
+                  <Logo className="h-5 w-5 text-brand" />
+                  <h3 className="mt-4 font-display text-lg font-semibold tracking-tight text-ink">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-base leading-relaxed text-ink-muted">
                     {item.body}
-                  </dd>
-                </div>
+                  </p>
+                </article>
               ))}
-            </dl>
+            </div>
           </div>
         </section>
       </main>
 
       <footer className="border-t border-line">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-ink-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <span>Yjs · Express · MySQL · Konva · one EC2 box</span>
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 text-base text-ink-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <span>Lattice — a whiteboard for thinking together.</span>
           <Link href="/login" className="w-fit text-ink-muted hover:text-ink">
             Sign in
           </Link>

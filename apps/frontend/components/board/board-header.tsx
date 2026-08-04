@@ -30,9 +30,9 @@ export function BoardHeader({
   exporting: boolean;
 }) {
   return (
-    <header className="z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-base px-2 sm:px-3">
+    <header className="z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-page px-2 sm:px-3">
       <IconLink label="Back to boards" href="/dashboard">
-        <ArrowLeft size={18} strokeWidth={1.75} aria-hidden />
+        <ArrowLeft size={20} strokeWidth={1.75} aria-hidden />
       </IconLink>
 
       <BoardTitle board={board} onRenamed={onRenamed} />
@@ -44,7 +44,7 @@ export function BoardHeader({
         onClick={onToggleFavorite}
       >
         <Star
-          size={17}
+          size={19}
           strokeWidth={1.75}
           fill={board.isFavorite ? "currentColor" : "none"}
           aria-hidden
@@ -56,7 +56,7 @@ export function BoardHeader({
         onClick={onExport}
         disabled={exporting}
       >
-        <Download size={17} strokeWidth={1.75} aria-hidden />
+        <Download size={19} strokeWidth={1.75} aria-hidden />
       </IconButton>
 
       <ThemeToggle />
