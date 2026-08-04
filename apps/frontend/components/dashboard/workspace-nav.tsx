@@ -1,6 +1,7 @@
 "use client";
 
-import { LayoutGrid, Lock, Users } from "lucide-react";
+import { LayoutGrid, Lock, Settings2, Users } from "lucide-react";
+import Link from "next/link";
 
 import type { Workspace } from "@lattice/shared";
 
@@ -40,22 +41,34 @@ export function WorkspaceSidebar({
             <div key={key} className="h-9 animate-pulse rounded-md bg-raised" />
           ))
         : workspaces.map((workspace) => (
-            <ScopeButton
-              key={workspace.id}
-              active={value === workspace.id}
-              onClick={() => onChange(workspace.id)}
-              icon={
-                workspace.memberCount > 1 ? (
-                  <Users size={18} strokeWidth={1.75} aria-hidden />
-                ) : (
-                  <Lock size={18} strokeWidth={1.75} aria-hidden />
-                )
-              }
-              label={workspace.name}
-              meta={
-                workspace.memberCount > 1 ? `${workspace.memberCount}` : undefined
-              }
-            />
+            <div key={workspace.id} className="flex items-center gap-0.5">
+              <ScopeButton
+                active={value === workspace.id}
+                onClick={() => onChange(workspace.id)}
+                icon={
+                  workspace.memberCount > 1 ? (
+                    <Users size={18} strokeWidth={1.75} aria-hidden />
+                  ) : (
+                    <Lock size={18} strokeWidth={1.75} aria-hidden />
+                  )
+                }
+                label={workspace.name}
+                meta={
+                  workspace.memberCount > 1
+                    ? `${workspace.memberCount}`
+                    : undefined
+                }
+              />
+
+              <Link
+                href={`/workspace/${workspace.id}/members`}
+                aria-label={`Manage ${workspace.name}`}
+                title="Manage members"
+                className="flex h-9 w-8 shrink-0 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-raised hover:text-ink"
+              >
+                <Settings2 size={18} strokeWidth={1.75} aria-hidden />
+              </Link>
+            </div>
           ))}
     </nav>
   );

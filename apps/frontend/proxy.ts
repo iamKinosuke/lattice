@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 import { AUTH_COOKIE } from "@lattice/shared/api";
 
-const PROTECTED = ["/dashboard", "/board"];
+const PROTECTED = ["/dashboard", "/board", "/workspace"];
 
 const AUTH_ONLY = ["/", "/login", "/register"];
 
@@ -32,5 +32,12 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/board/:path*", "/login", "/register"],
+  matcher: [
+    "/",
+    "/dashboard/:path*",
+    "/board/:path*",
+    "/workspace/:path*",
+    "/login",
+    "/register",
+  ],
 };

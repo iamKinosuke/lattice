@@ -1,15 +1,24 @@
 import type {
+  AddBoardMemberBody,
+  AddWorkspaceMemberBody,
   ApiErrorBody,
   AuthResponse,
   Board,
   BoardFilter,
   BoardListResponse,
+  BoardMember,
+  BoardMemberListResponse,
+  BoardRole,
   CreateBoardBody,
   LoginBody,
   PublicUser,
   RegisterBody,
   RenameBoardBody,
+  Workspace,
   WorkspaceListResponse,
+  WorkspaceMember,
+  WorkspaceMemberListResponse,
+  WorkspaceRole,
 } from "@lattice/shared";
 
 const API_BASE =
@@ -119,6 +128,49 @@ export const api = {
 
   workspaces: (signal?: AbortSignal) =>
     request<WorkspaceListResponse>("/workspaces", { signal }),
+
+  workspace: (workspaceId: string, signal?: AbortSignal) =>
+    request<Workspace>(`/workspaces/${workspaceId}`, { signal }),
+
+  workspaceMembers: (workspaceId: string, signal?: AbortSignal) =>
+    request<WorkspaceMemberListResponse>(`/workspaces/${workspaceId}/members`, {
+      signal,
+    }),
+
+  addWorkspaceMember: (workspaceId: string, body: AddWorkspaceMemberBody) =>
+    request<WorkspaceMember>(`/workspaces/${workspaceId}/members`, {
+      method: "POST",
+      body,
+    }),
+
+  setWorkspaceRole: (workspaceId: string, userId: string, role: WorkspaceRole) =>
+    request<WorkspaceMember>(`/workspaces/${workspaceId}/members/${userId}`, {
+      method: "PATCH",
+      body: { role },
+    }),
+
+  removeWorkspaceMember: (workspaceId: string, userId: string) =>
+    request<void>(`/workspaces/${workspaceId}/members/${userId}`, {
+      method: "DELETE",
+    }),
+
+  boardMembers: (boardId: string, signal?: AbortSignal) =>
+    request<BoardMemberListResponse>(`/boards/${boardId}/members`, { signal }),
+
+  addBoardMember: (boardId: string, body: AddBoardMemberBody) =>
+    request<BoardMember>(`/boards/${boardId}/members`, {
+      method: "POST",
+      body,
+    }),
+
+  setBoardRole: (boardId: string, userId: string, role: BoardRole) =>
+    request<BoardMember>(`/boards/${boardId}/members/${userId}`, {
+      method: "PATCH",
+      body: { role },
+    }),
+
+  removeBoardMember: (boardId: string, userId: string) =>
+    request<void>(`/boards/${boardId}/members/${userId}`, { method: "DELETE" }),
 
   boards: (
     params: { filter?: BoardFilter; workspaceId?: string } = {},
