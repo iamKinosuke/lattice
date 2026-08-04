@@ -7,6 +7,7 @@ import { userIdToColor, type Board, type PresenceUser } from "@lattice/shared";
 import { BoardHeader } from "@/components/board/board-header";
 import { BoardUnavailable } from "@/components/board/board-unavailable";
 import { CanvasSurface } from "@/components/board/canvas-surface";
+import { BoardShareDialog } from "@/components/board/board-share-dialog";
 import { SelectionTools } from "@/components/board/selection-tools";
 import { TOOL_SHORTCUTS, Toolbar } from "@/components/board/toolbar";
 import { ZoomControls } from "@/components/board/zoom-controls";
@@ -33,6 +34,7 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [actionError, setActionError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const resetView = useCanvasStore((store) => store.resetView);
   const setCanvasState = useCanvasStore((store) => store.setCanvasState);
@@ -215,6 +217,14 @@ export function BoardWorkspace({ boardId }: { boardId: string }) {
         onToggleFavorite={toggleFavorite}
         onExport={() => void exportPng()}
         exporting={exporting}
+        onShare={() => setSharing(true)}
+      />
+
+      <BoardShareDialog
+        open={sharing}
+        boardId={board.id}
+        boardTitle={board.title}
+        onClose={() => setSharing(false)}
       />
 
       {actionError ? (

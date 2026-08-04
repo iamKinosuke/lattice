@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Download, Star } from "lucide-react";
+import { ArrowLeft, Download, Star, UserPlus } from "lucide-react";
 
 import type { Board, PresenceUser } from "@lattice/shared";
 
@@ -19,6 +19,7 @@ export function BoardHeader({
   onToggleFavorite,
   onExport,
   exporting,
+  onShare,
 }: {
   board: Board;
   status: SyncStatus;
@@ -28,6 +29,7 @@ export function BoardHeader({
   onToggleFavorite: () => void;
   onExport: () => void;
   exporting: boolean;
+  onShare: () => void;
 }) {
   return (
     <header className="z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-page px-2 sm:px-3">
@@ -58,6 +60,12 @@ export function BoardHeader({
       >
         <Download size={19} strokeWidth={1.75} aria-hidden />
       </IconButton>
+
+      {board.canShare ? (
+        <IconButton label="Share this board" onClick={onShare}>
+          <UserPlus size={19} strokeWidth={1.75} aria-hidden />
+        </IconButton>
+      ) : null}
 
       <ThemeToggle />
 
