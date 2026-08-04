@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { Wordmark } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/app/theme-toggle";
 import { UserMenu } from "@/components/app/user-menu";
 import { useSession } from "@/lib/use-session";
 
@@ -16,7 +17,10 @@ export function AppHeader() {
           <Wordmark />
         </Link>
 
-        <UserMenu user={user} />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <UserMenu user={user} />
+        </div>
       </div>
     </header>
   );

@@ -36,7 +36,7 @@ export default function AuthLayout({
             <br />
             Many cursors.
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-ink-muted">
+          <p className="mt-5 text-[1rem] leading-relaxed text-ink-muted">
             Lattice is a collaborative whiteboard whose sync server is part of the
             project, not a service it rents. Edits merge as a lattice join — so
             they converge no matter what order they arrive in, and no server has to
@@ -60,7 +60,7 @@ export default function AuthLayout({
         </div>
 
         <p className="relative z-10 text-[0.8125rem] text-ink-subtle">
-          Yjs · Express · MariaDB · one EC2 box
+          Yjs · Express · MySQL · Konva · one EC2 box
         </p>
       </aside>
 

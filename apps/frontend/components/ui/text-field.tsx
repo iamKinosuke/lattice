@@ -49,7 +49,7 @@ export function TextField({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={cn(
-            "h-11 w-full rounded-md border bg-surface px-3 text-base text-ink",
+            "h-11 w-full rounded-md border bg-surface px-3 text-[1rem] text-ink",
             "placeholder:text-ink-subtle transition-colors duration-150",
             "disabled:cursor-not-allowed disabled:bg-raised disabled:opacity-60",
             error ? "border-danger" : "border-line hover:border-line-strong",

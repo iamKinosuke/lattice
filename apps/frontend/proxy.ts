@@ -5,7 +5,7 @@ import { AUTH_COOKIE } from "@lattice/shared/api";
 
 const PROTECTED = ["/dashboard", "/board"];
 
-const AUTH_ONLY = ["/login", "/register"];
+const AUTH_ONLY = ["/", "/login", "/register"];
 
 export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -32,5 +32,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/board/:path*", "/login", "/register"],
+  matcher: ["/", "/dashboard/:path*", "/board/:path*", "/login", "/register"],
 };

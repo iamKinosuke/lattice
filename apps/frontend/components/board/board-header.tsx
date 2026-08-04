@@ -4,6 +4,7 @@ import { ArrowLeft, Download, Star } from "lucide-react";
 
 import type { Board, PresenceUser } from "@lattice/shared";
 
+import { ThemeToggle } from "@/components/app/theme-toggle";
 import { BoardTitle } from "@/components/board/board-title";
 import { ConnectionStatus, type SyncStatus } from "@/components/board/connection-status";
 import { PresenceBar } from "@/components/board/presence-bar";
@@ -57,6 +58,8 @@ export function BoardHeader({
       >
         <Download size={17} strokeWidth={1.75} aria-hidden />
       </IconButton>
+
+      <ThemeToggle />
 
       <div className="ml-auto flex items-center gap-3 sm:gap-4">
         <ConnectionStatus status={status} />

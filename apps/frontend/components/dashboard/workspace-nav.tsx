@@ -115,7 +115,7 @@ export function WorkspaceSelect({
         id={selectId}
         value={value ?? ""}
         onChange={(event) => onChange(event.target.value || null)}
-        className="h-11 w-full cursor-pointer rounded-md border border-line bg-surface px-3 text-base text-ink"
+        className="h-11 w-full cursor-pointer rounded-md border border-line bg-surface px-3 text-[1rem] text-ink"
       >
         <option value="">All boards</option>
         {workspaces.map((workspace) => (
