@@ -174,7 +174,7 @@ function createLayerNode(id: string, layer: Layer): LayerNode {
           if (next.type !== "path") return;
           place(group, next);
           path.setAttrs({
-            data: strokeToPathData(next.points, true),
+            data: strokeToPathData(next.points, true, next.size),
             fill: colorToCss(next.fill),
           });
         },

@@ -2,6 +2,7 @@ import Konva from "konva";
 
 import {
   DEFAULT_FILL,
+  DEFAULT_STROKE_SIZE,
   colorToCss,
   type Layer,
   type Point,
@@ -9,7 +10,7 @@ import {
 } from "@lattice/shared";
 
 import { strokeToPathLayer } from "@/lib/canvas-math";
-import { STROKE_SIZE, strokeToPathData } from "@/lib/stroke";
+import { strokeToPathData } from "@/lib/stroke";
 
 const MIN_SAMPLE_DISTANCE = 2;
 
@@ -21,6 +22,7 @@ export class PenCapture {
 
   private points: StrokePoint[] = [];
   private lastScreen: Point | null = null;
+  private strokeSize = DEFAULT_STROKE_SIZE;
 
   constructor(stage: Konva.Stage) {
     this.layer.add(this.preview);
@@ -35,9 +37,14 @@ export class PenCapture {
     return this.active ? this.points : null;
   }
 
-  begin(point: Point, screen: Point, pressure: number): void {
+  get size(): number {
+    return this.strokeSize;
+  }
+
+  begin(point: Point, screen: Point, pressure: number, size: number): void {
     this.points = [[point.x, point.y, pressure]];
     this.lastScreen = screen;
+    this.strokeSize = size;
     this.preview.fill(colorToCss(DEFAULT_FILL));
     this.draw(false);
   }
@@ -56,11 +63,12 @@ export class PenCapture {
 
   finish(): Layer | null {
     const points = this.points;
+    const size = this.strokeSize;
     this.reset();
 
     if (points.length < 2) return null;
 
-    return strokeToPathLayer(points, DEFAULT_FILL, STROKE_SIZE / 2);
+    return { ...strokeToPathLayer(points, DEFAULT_FILL, size / 2), size };
   }
 
   cancel(): void {
@@ -79,7 +87,7 @@ export class PenCapture {
   }
 
   private draw(last: boolean): void {
-    this.preview.data(strokeToPathData(this.points, last));
+    this.preview.data(strokeToPathData(this.points, last, this.strokeSize));
     this.layer.batchDraw();
   }
 }

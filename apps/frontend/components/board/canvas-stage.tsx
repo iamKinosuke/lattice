@@ -71,11 +71,14 @@ export function CanvasStage({
     let cursor: Point | null = null;
 
     const presencePublisher = throttle(PRESENCE_INTERVAL_MS, () => {
+      const draft = pen.draft;
+
       awareness.setLocalStateField("presence", {
         ...INITIAL_PRESENCE,
         cursor,
         selection: store.getState().selection,
-        pencilDraft: pen.draft ? [...pen.draft] : null,
+        pencilDraft: draft ? [...draft] : null,
+        penSize: draft ? pen.size : null,
       });
     });
 
@@ -139,7 +142,7 @@ export function CanvasStage({
         } catch {
         }
 
-        pen.begin(at.canvas, at.screen, pressureOf(event.evt));
+        pen.begin(at.canvas, at.screen, pressureOf(event.evt), current.penSize);
         return;
       }
 

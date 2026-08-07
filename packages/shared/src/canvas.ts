@@ -64,6 +64,7 @@ export type StrokePoint = [x: number, y: number, pressure: number];
 export type PathLayer = LayerBase & {
   type: "path";
   points: StrokePoint[];
+  size?: number;
 };
 
 export type Layer =
@@ -83,6 +84,8 @@ export const MIN_ZOOM = 0.1;
 export const MAX_ZOOM = 8;
 
 export const DEFAULT_FILL: Color = { r: 100, g: 116, b: 139 };
+
+export const DEFAULT_STROKE_SIZE = 8;
 
 export function colorToCss({ r, g, b }: Color): string {
   const hex = (n: number) => n.toString(16).padStart(2, "0");

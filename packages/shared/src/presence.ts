@@ -12,6 +12,7 @@ export type Presence = {
   selection: string[];
   pencilDraft: StrokePoint[] | null;
   penColor: Color | null;
+  penSize: number | null;
   camera: Camera | null;
 };
 
@@ -25,6 +26,7 @@ export const INITIAL_PRESENCE: Presence = {
   selection: [],
   pencilDraft: null,
   penColor: null,
+  penSize: null,
   camera: null,
 };
 

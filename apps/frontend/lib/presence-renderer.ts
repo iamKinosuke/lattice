@@ -152,7 +152,9 @@ class PeerNode {
     if (cursor) this.cursor.position(cursor);
 
     const points = presence?.pencilDraft ?? null;
-    this.draft.data(points ? strokeToPathData(points, false) : "");
+    this.draft.data(
+      points ? strokeToPathData(points, false, presence?.penSize ?? undefined) : "",
+    );
 
     this.ids = presence?.selection ?? [];
     this.redrawSelection(doc);

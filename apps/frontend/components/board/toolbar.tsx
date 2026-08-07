@@ -3,7 +3,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Circle, MousePointer2, Pencil, Square, StickyNote, Type } from "lucide-react";
 
-import type { InsertableLayerType } from "@lattice/shared";
+import { DEFAULT_STROKE_SIZE, type InsertableLayerType } from "@lattice/shared";
 
 import { useCanvasStore } from "@/lib/canvas-store";
 import { cn } from "@/lib/cn";
@@ -62,9 +62,17 @@ const TOOLS: Tool[] = [
   },
 ];
 
+const PEN_SIZES: { label: string; value: number; dot: number }[] = [
+  { label: "Thin", value: 4, dot: 6 },
+  { label: "Medium", value: DEFAULT_STROKE_SIZE, dot: 10 },
+  { label: "Bold", value: 16, dot: 16 },
+];
+
 export function Toolbar() {
   const canvasState = useCanvasStore((store) => store.canvasState);
   const setCanvasState = useCanvasStore((store) => store.setCanvasState);
+  const penSize = useCanvasStore((store) => store.penSize);
+  const setPenSize = useCanvasStore((store) => store.setPenSize);
   const current = activeTool(canvasState);
 
   return (
@@ -103,6 +111,49 @@ export function Toolbar() {
           </button>
         );
       })}
+
+      {current === "pencil" ? (
+        <>
+          <div
+            className="w-px shrink-0 self-stretch bg-line lg:h-px lg:w-auto"
+            aria-hidden
+          />
+
+          <div
+            className="flex flex-row gap-1 lg:flex-col"
+            role="group"
+            aria-label="Stroke width"
+          >
+            {PEN_SIZES.map((size) => {
+              const active = penSize === size.value;
+
+              return (
+                <button
+                  key={size.value}
+                  type="button"
+                  aria-pressed={active}
+                  title={`${size.label} stroke`}
+                  onClick={() => setPenSize(size.value)}
+                  className={cn(
+                    "inline-flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg",
+                    "transition-colors duration-150",
+                    active
+                      ? "bg-brand text-brand-ink"
+                      : "text-ink-muted hover:bg-raised hover:text-ink",
+                  )}
+                >
+                  <span
+                    className="rounded-full bg-current"
+                    style={{ width: size.dot, height: size.dot }}
+                    aria-hidden
+                  />
+                  <span className="sr-only">{size.label} stroke</span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

@@ -1,6 +1,11 @@
 "use client";
 
-import { MAX_ZOOM, MIN_ZOOM, type Camera } from "@lattice/shared";
+import {
+  DEFAULT_STROKE_SIZE,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  type Camera,
+} from "@lattice/shared";
 import { create } from "zustand";
 
 import { zoomAtPoint } from "@/lib/canvas-math";
@@ -17,10 +22,12 @@ type CanvasStore = {
   viewport: { width: number; height: number };
   canvasState: CanvasState;
   selection: string[];
+  penSize: number;
 
   setCamera: (camera: Camera) => void;
   setViewport: (viewport: { width: number; height: number }) => void;
   setCanvasState: (canvasState: CanvasState) => void;
+  setPenSize: (penSize: number) => void;
   setSelection: (selection: string[]) => void;
   pruneSelection: (live: ReadonlySet<string>) => void;
 
@@ -35,9 +42,11 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   viewport: { width: 0, height: 0 },
   canvasState: { mode: "none" },
   selection: EMPTY_SELECTION,
+  penSize: DEFAULT_STROKE_SIZE,
 
   setCamera: (camera) => set({ camera }),
   setViewport: (viewport) => set({ viewport }),
+  setPenSize: (penSize) => set({ penSize }),
 
   setCanvasState: (canvasState) => {
     const clears = canvasState.mode === "pencil" || canvasState.mode === "inserting";
