@@ -14,6 +14,7 @@ import { StatusPage } from "@/components/app/status-page";
 import { MemberRow } from "@/components/share/member-list";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
+import { Select } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { TextField } from "@/components/ui/text-field";
 import { ApiClientError, api } from "@/lib/api";
@@ -231,30 +232,20 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="new-member-role"
-              className="text-sm font-medium text-ink"
-            >
-              Role
-            </label>
-            <select
-              id="new-member-role"
-              value={role}
-              onChange={(event) =>
-                setRole(event.target.value as WorkspaceRole)
-              }
-              className="h-11 cursor-pointer rounded-md border border-line bg-surface px-3 text-base text-ink"
-            >
-              {ROLES.filter(
-                (value) => value !== "owner" || workspace.role === "owner",
-              ).map((value) => (
-                <option key={value} value={value}>
-                  {ROLE_LABELS[value]}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            id="new-member-role"
+            label="Role"
+            value={role}
+            onChange={(event) => setRole(event.target.value as WorkspaceRole)}
+          >
+            {ROLES.filter(
+              (value) => value !== "owner" || workspace.role === "owner",
+            ).map((value) => (
+              <option key={value} value={value}>
+                {ROLE_LABELS[value]}
+              </option>
+            ))}
+          </Select>
 
           <Button type="submit" loading={adding} className="sm:mt-7">
             {adding ? "Adding…" : "Add"}
@@ -291,7 +282,8 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
               note={member.userId === user?.id ? "(you)" : undefined}
             >
               {mayManage ? (
-                <select
+                <Select
+                  size="sm"
                   aria-label={`Role for ${member.name}`}
                   value={member.role}
                   disabled={busyUserId === member.userId}
@@ -301,14 +293,13 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
                       event.target.value as WorkspaceRole,
                     )
                   }
-                  className="h-9 cursor-pointer rounded-md border border-line bg-surface px-2 text-sm text-ink disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {ROLES.map((value) => (
                     <option key={value} value={value}>
                       {ROLE_LABELS[value]}
                     </option>
                   ))}
-                </select>
+                </Select>
               ) : (
                 <span className="text-sm text-ink-muted">
                   {ROLE_LABELS[member.role]}

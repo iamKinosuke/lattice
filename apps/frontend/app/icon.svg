@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <style>
+    .plane { stroke: #7c3aed }
+    .join  { stroke: #0891b2; fill: #0891b2 }
+    @media (prefers-color-scheme: dark) {
+      .plane { stroke: #a78bfa }
+      .join  { stroke: #22d3ee; fill: #22d3ee }
+    }
+  </style>
+  <path class="plane" d="M2 4 13.5 2 15.5 13.5 4 15.5Z"/>
+  <path class="plane" d="M10.5 8.5 22 10.5 20 22 8.5 20Z"/>
+  <path class="join" d="M10.5 8.5 14.76 9.24 15.5 13.5 9.24 14.76Z"/>
+</svg>

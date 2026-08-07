@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import type { Workspace } from "@lattice/shared";
 
+import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/cn";
 
 export type WorkspaceScope = string | null;
@@ -117,18 +118,13 @@ export function WorkspaceSelect({
   value: WorkspaceScope;
   onChange: (next: WorkspaceScope) => void;
 }) {
-  const selectId = "workspace-scope";
-
   return (
-    <div className="flex flex-col gap-1.5 lg:hidden">
-      <label htmlFor={selectId} className="text-sm font-medium text-ink">
-        Workspace
-      </label>
-      <select
-        id={selectId}
+    <div className="lg:hidden">
+      <Select
+        id="workspace-scope"
+        label="Workspace"
         value={value ?? ""}
         onChange={(event) => onChange(event.target.value || null)}
-        className="h-11 w-full cursor-pointer rounded-md border border-line bg-surface px-3 text-base text-ink"
       >
         <option value="">All boards</option>
         {workspaces.map((workspace) => (
@@ -136,7 +132,7 @@ export function WorkspaceSelect({
             {workspace.name}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }

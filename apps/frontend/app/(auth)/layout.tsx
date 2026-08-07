@@ -49,7 +49,7 @@ export default function AuthLayout({
               "Boards save themselves — close the tab and come back later",
             ].map((line) => (
               <li key={line} className="flex items-start gap-3">
-                <Logo className="mt-0.5 h-4 w-4 shrink-0 text-brand-text" />
+                <Logo className="mt-0.5 h-6 w-6 shrink-0 text-brand-text" />
                 <span className="text-base leading-relaxed text-ink-muted">
                   {line}
                 </span>

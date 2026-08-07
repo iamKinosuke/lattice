@@ -75,7 +75,7 @@ export default function RootPage() {
           <div className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-3.5 py-1.5 text-sm font-medium text-ink-muted backdrop-blur">
-                <Logo className="h-3.5 w-3.5 text-brand" />
+                <Logo className="h-6 w-6 text-brand" />
                 Runs in your browser — nothing to install
               </span>
 
@@ -112,7 +112,7 @@ export default function RootPage() {
                 key={item.title}
                 className="rounded-xl border border-line bg-surface p-6 shadow-sm"
               >
-                <Logo className="h-5 w-5 text-brand" />
+                <Logo className="h-8 w-8 text-brand" />
                 <h3 className="mt-4 font-display text-lg font-semibold tracking-tight text-ink">
                   {item.title}
                 </h3>
@@ -140,7 +140,7 @@ export default function RootPage() {
                   key={item.title}
                   className="rounded-xl border border-line bg-page p-6"
                 >
-                  <Logo className="h-5 w-5 text-brand" />
+                  <Logo className="h-8 w-8 text-brand" />
                   <h3 className="mt-4 font-display text-lg font-semibold tracking-tight text-ink">
                     {item.title}
                   </h3>
