@@ -20,16 +20,12 @@ export type BoardAccess = {
   boardRole: BoardRole | null;
 };
 
-export function isAtLeastWorkspaceAdmin(
-  role: WorkspaceRole | null,
-): role is "owner" | "admin" {
-  return role === "owner" || role === "admin";
+export function isWorkspaceAdmin(role: WorkspaceRole | null): role is "admin" {
+  return role === "admin";
 }
 
 export function mayShareBoard(access: BoardAccess, userId: string): boolean {
-  return (
-    isAtLeastWorkspaceAdmin(access.workspaceRole) || access.createdBy === userId
-  );
+  return isWorkspaceAdmin(access.workspaceRole) || access.createdBy === userId;
 }
 
 export function mayDeleteBoard(access: BoardAccess, userId: string): boolean {

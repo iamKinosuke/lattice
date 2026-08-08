@@ -11,12 +11,14 @@ import { findUserSummaryByEmail } from "./users.js";
 import { Prisma } from "../generated/prisma/client.js";
 
 const membershipSelect = {
+  userId: true,
   role: true,
   workspace: {
     select: {
       id: true,
       name: true,
       slug: true,
+      ownerId: true,
       createdAt: true,
       _count: { select: { members: true } },
     },
@@ -24,22 +26,25 @@ const membershipSelect = {
 } as const;
 
 type MembershipRow = {
+  userId: string;
   role: WorkspaceRole;
   workspace: {
     id: string;
     name: string;
     slug: string;
+    ownerId: string;
     createdAt: Date;
     _count: { members: number };
   };
 };
 
-function toWorkspace({ role, workspace }: MembershipRow): Workspace {
+function toWorkspace({ userId, role, workspace }: MembershipRow): Workspace {
   return {
     id: workspace.id,
     name: workspace.name,
     slug: workspace.slug,
     role,
+    isCreator: workspace.ownerId === userId,
     memberCount: workspace._count.members,
     createdAt: workspace.createdAt.toISOString(),
   };
@@ -50,7 +55,7 @@ export async function listWorkspacesForUser(
 ): Promise<Workspace[]> {
   const memberships = await prisma.workspaceMember.findMany({
     where: { userId },
-    orderBy: { joinedAt: "asc" },
+    orderBy: [{ joinedAt: "asc" }, { workspaceId: "asc" }],
     select: membershipSelect,
   });
 
@@ -83,12 +88,14 @@ const memberSelect = {
   role: true,
   joinedAt: true,
   user: { select: { id: true, name: true, email: true, avatarUrl: true } },
+  workspace: { select: { ownerId: true } },
 } as const;
 
 type MemberRow = {
   role: WorkspaceRole;
   joinedAt: Date;
   user: { id: string; name: string; email: string; avatarUrl: string | null };
+  workspace: { ownerId: string };
 };
 
 function toMember(row: MemberRow): WorkspaceMember {
@@ -98,6 +105,7 @@ function toMember(row: MemberRow): WorkspaceMember {
     email: row.user.email,
     avatarUrl: row.user.avatarUrl,
     role: row.role,
+    isCreator: row.workspace.ownerId === row.user.id,
     joinedAt: row.joinedAt.toISOString(),
   };
 }
@@ -107,7 +115,7 @@ export async function listWorkspaceMembers(
 ): Promise<WorkspaceMember[]> {
   const rows = await prisma.workspaceMember.findMany({
     where: { workspaceId },
-    orderBy: { joinedAt: "asc" },
+    orderBy: [{ joinedAt: "asc" }, { userId: "asc" }],
     select: memberSelect,
   });
 
@@ -149,8 +157,8 @@ export async function setWorkspaceMemberRole(
   userId: string,
   role: WorkspaceRole,
 ): Promise<WorkspaceMember> {
-  if (role !== "owner") {
-    await guardLastOwner(workspaceId, userId);
+  if (role === "member") {
+    await guardWorkspaceCreator(workspaceId, userId);
   }
 
   try {
@@ -170,7 +178,7 @@ export async function removeWorkspaceMember(
   workspaceId: string,
   userId: string,
 ): Promise<void> {
-  await guardLastOwner(workspaceId, userId);
+  await guardWorkspaceCreator(workspaceId, userId);
 
   try {
     await prisma.workspaceMember.delete({
@@ -181,25 +189,19 @@ export async function removeWorkspaceMember(
   }
 }
 
-async function guardLastOwner(
+async function guardWorkspaceCreator(
   workspaceId: string,
   userId: string,
 ): Promise<void> {
-  const membership = await prisma.workspaceMember.findUnique({
-    where: { workspaceId_userId: { workspaceId, userId } },
-    select: { role: true },
+  const workspace = await prisma.workspace.findUnique({
+    where: { id: workspaceId },
+    select: { ownerId: true },
   });
 
-  if (membership?.role !== "owner") return;
-
-  const owners = await prisma.workspaceMember.count({
-    where: { workspaceId, role: "owner" },
-  });
-
-  if (owners <= 1) {
+  if (workspace?.ownerId === userId) {
     throw new ApiError(
       409,
-      "A workspace must keep one owner — promote somebody else first",
+      "This workspace belongs to the person who created it — they stay an admin of it",
     );
   }
 }

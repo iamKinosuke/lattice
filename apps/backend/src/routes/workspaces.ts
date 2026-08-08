@@ -29,7 +29,7 @@ workspaceRouter.use(requireAuth);
 type WorkspaceParams = { workspaceId: string };
 type MemberParams = WorkspaceParams & { userId: string };
 
-const roleSchema = z.enum(["owner", "admin", "member"]);
+const roleSchema = z.enum(["admin", "member"]);
 
 const addMemberSchema = z.object({
   email: emailField,
@@ -78,11 +78,7 @@ workspaceRouter.post<WorkspaceParams>(
     const { workspaceId } = req.params;
     const body = parseBody(addMemberSchema, req.body);
 
-    const role = await requireAdmin(workspaceId, user.id);
-
-    if (body.role === "owner" && role !== "owner") {
-      throw new ApiError(403, "Only the workspace owner can add another owner");
-    }
+    await requireAdmin(workspaceId, user.id);
 
     const member = await addWorkspaceMember({
       workspaceId,
@@ -107,8 +103,7 @@ workspaceRouter.patch<MemberParams>(
     const { workspaceId, userId } = req.params;
     const body = parseBody(setRoleSchema, req.body);
 
-    const role = await requireAdmin(workspaceId, user.id);
-    await requireOwnerForOwnerChanges(workspaceId, userId, body.role, role);
+    await requireAdmin(workspaceId, user.id);
 
     const member = await setWorkspaceMemberRole(workspaceId, userId, body.role);
     res.json(member);
@@ -121,8 +116,7 @@ workspaceRouter.delete<MemberParams>(
     const user = currentUser(req);
     const { workspaceId, userId } = req.params;
 
-    const role = await requireAdmin(workspaceId, user.id);
-    await requireOwnerForOwnerChanges(workspaceId, userId, "member", role);
+    await requireAdmin(workspaceId, user.id);
 
     await removeWorkspaceMember(workspaceId, userId);
     await disconnectUserFromWorkspace(workspaceId, userId);
@@ -153,30 +147,10 @@ async function requireMembership(
 async function requireAdmin(
   workspaceId: string,
   userId: string,
-): Promise<WorkspaceRole> {
+): Promise<void> {
   const role = await requireMembership(workspaceId, userId);
 
-  if (role !== "owner" && role !== "admin") {
-    throw new ApiError(
-      403,
-      "Only a workspace owner or admin can manage members",
-    );
-  }
-
-  return role;
-}
-
-async function requireOwnerForOwnerChanges(
-  workspaceId: string,
-  targetUserId: string,
-  nextRole: WorkspaceRole,
-  actorRole: WorkspaceRole,
-): Promise<void> {
-  if (actorRole === "owner") return;
-
-  const target = await findWorkspaceMembership(workspaceId, targetUserId);
-
-  if (target?.role === "owner" || nextRole === "owner") {
-    throw new ApiError(403, "Only the workspace owner can change an owner");
+  if (role !== "admin") {
+    throw new ApiError(403, "Only a workspace admin can manage members");
   }
 }

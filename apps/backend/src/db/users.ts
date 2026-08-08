@@ -70,7 +70,7 @@ export async function createUserWithPersonalWorkspace(input: {
           name: personalWorkspaceName(input.name),
           slug: personalWorkspaceSlug(input.name),
           ownerId: user.id,
-          members: { create: { userId: user.id, role: "owner" } },
+          members: { create: { userId: user.id, role: "admin" } },
         },
       });
 

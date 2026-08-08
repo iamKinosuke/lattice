@@ -35,13 +35,14 @@ export type TokenClaims = {
   exp: number;
 };
 
-export type WorkspaceRole = "owner" | "admin" | "member";
+export type WorkspaceRole = "admin" | "member";
 
 export type Workspace = {
   id: string;
   name: string;
   slug: string;
   role: WorkspaceRole;
+  isCreator: boolean;
   memberCount: number;
   createdAt: string;
 };
@@ -60,6 +61,7 @@ export type WorkspaceMember = {
   email: string;
   avatarUrl: string | null;
   role: WorkspaceRole;
+  isCreator: boolean;
   joinedAt: string;
 };
 

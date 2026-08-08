@@ -59,7 +59,6 @@ model WorkspaceMember {
 }
 
 enum WorkspaceRole {
-  owner
   admin
   member
 }

@@ -113,7 +113,7 @@ export function DashboardView({
   const targetWorkspaceId = useMemo(() => {
     if (scope) return scope;
     return (
-      workspaces.find((workspace) => workspace.role === "owner")?.id ??
+      workspaces.find((workspace) => workspace.isCreator)?.id ??
       workspaces[0]?.id ??
       null
     );

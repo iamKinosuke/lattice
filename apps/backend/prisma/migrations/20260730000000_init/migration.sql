@@ -25,7 +25,7 @@ CREATE TABLE `workspaces` (
 CREATE TABLE `workspace_members` (
     `workspace_id` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
     `user_id` CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
-    `role` ENUM('owner', 'admin', 'member') NOT NULL DEFAULT 'member',
+    `role` ENUM('admin', 'member') NOT NULL DEFAULT 'member',
     `joined_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
 
     INDEX `idx_wm_user`(`user_id`),

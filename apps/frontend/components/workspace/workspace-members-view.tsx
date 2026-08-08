@@ -20,10 +20,9 @@ import { TextField } from "@/components/ui/text-field";
 import { ApiClientError, api } from "@/lib/api";
 import { useSession } from "@/lib/use-session";
 
-const ROLES: WorkspaceRole[] = ["owner", "admin", "member"];
+const ROLES: WorkspaceRole[] = ["admin", "member"];
 
 const ROLE_LABELS: Record<WorkspaceRole, string> = {
-  owner: "Owner",
   admin: "Admin",
   member: "Member",
 };
@@ -110,7 +109,7 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
   }
 
   const { workspace } = state;
-  const mayManage = workspace.role === "owner" || workspace.role === "admin";
+  const mayManage = workspace.role === "admin";
 
   async function add(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -238,9 +237,7 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
             value={role}
             onChange={(event) => setRole(event.target.value as WorkspaceRole)}
           >
-            {ROLES.filter(
-              (value) => value !== "owner" || workspace.role === "owner",
-            ).map((value) => (
+            {ROLES.map((value) => (
               <option key={value} value={value}>
                 {ROLE_LABELS[value]}
               </option>
@@ -279,9 +276,15 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
               name={member.name}
               email={member.email}
               avatarUrl={member.avatarUrl}
-              note={member.userId === user?.id ? "(you)" : undefined}
+              note={
+                member.userId === user?.id
+                  ? "(you)"
+                  : member.isCreator
+                    ? "(creator)"
+                    : undefined
+              }
             >
-              {mayManage ? (
+              {mayManage && !member.isCreator ? (
                 <Select
                   size="sm"
                   aria-label={`Role for ${member.name}`}
@@ -306,7 +309,7 @@ export function WorkspaceMembersView({ workspaceId }: { workspaceId: string }) {
                 </span>
               )}
 
-              {mayManage ? (
+              {mayManage && !member.isCreator ? (
                 <IconButton
                   label={`Remove ${member.name}`}
                   disabled={busyUserId === member.userId}
