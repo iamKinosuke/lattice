@@ -3,10 +3,10 @@ import { isProduction } from "../config/env.js";
 type Level = "debug" | "info" | "warn" | "error";
 
 function emit(level: Level, message: string, context?: Record<string, unknown>) {
-  if (level === "debug" && isProduction) return;
-
   if (isProduction) {
-    console[level === "debug" ? "log" : level](
+    if (level !== "error") return;
+
+    console.error(
       JSON.stringify({ level, message, ...context, ts: new Date().toISOString() }),
     );
     return;
