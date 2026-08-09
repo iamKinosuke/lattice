@@ -2,10 +2,18 @@ import type { Response } from "express";
 
 import { AUTH_COOKIE } from "@lattice/shared";
 
-import { isProduction } from "../config/env.js";
+import { env, isProduction } from "../config/env.js";
 import { tokenExpiresAt } from "./jwt.js";
 
 export { AUTH_COOKIE };
+
+const cookieBase = {
+  httpOnly: true,
+  sameSite: "lax",
+  secure: isProduction,
+  path: "/",
+  ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
+} as const;
 
 type RequestLike = {
   headers: {
@@ -18,21 +26,13 @@ export function setAuthCookie(res: Response, token: string): void {
   const expires = tokenExpiresAt(token);
 
   res.cookie(AUTH_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: isProduction,
-    path: "/",
+    ...cookieBase,
     ...(expires ? { expires } : {}),
   });
 }
 
 export function clearAuthCookie(res: Response): void {
-  res.clearCookie(AUTH_COOKIE, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: isProduction,
-    path: "/",
-  });
+  res.clearCookie(AUTH_COOKIE, cookieBase);
 }
 
 export function readCookie(
