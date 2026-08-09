@@ -15,6 +15,7 @@
     "build": "npm run build -w @lattice/backend && npm run build -w @lattice/frontend",
     "build:backend": "npm run build -w @lattice/backend",
     "build:frontend": "npm run build -w @lattice/frontend",
+    "cf:build:frontend": "npm run cf:build -w @lattice/frontend",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "start": "pm2 start infra/ecosystem.config.cjs",

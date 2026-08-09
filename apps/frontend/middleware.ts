@@ -7,7 +7,7 @@ const PROTECTED = ["/dashboard", "/board", "/workspace"];
 
 const AUTH_ONLY = ["/", "/login", "/register"];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const signedIn = request.cookies.has(AUTH_COOKIE);
 
@@ -32,6 +32,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
+  runtime: "experimental-edge",
   matcher: [
     "/",
     "/dashboard/:path*",
