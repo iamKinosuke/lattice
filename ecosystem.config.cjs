@@ -1,8 +1,7 @@
 const path = require("node:path");
 
-const root = path.join(__dirname, "..");
-const backend = path.join(root, "apps/backend");
-const logs = path.join(root, "logs");
+const backend = path.join(__dirname, "apps/backend");
+const logs = path.join(__dirname, "logs");
 
 module.exports = {
   apps: [
