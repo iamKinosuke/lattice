@@ -7,7 +7,7 @@ const logs = path.join(root, "logs");
 module.exports = {
   apps: [
     {
-      name: "lattice-api",
+      name: "Lattice Api",
       cwd: backend,
       script: "dist/index.js",
       instances: 1,
