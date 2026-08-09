@@ -44,7 +44,7 @@ export default function AuthLayout({
 
           <ul className="mt-8 flex flex-col gap-3">
             {[
-              "Cursors carry names, so you can see what everyone is looking at",
+              "Every cursor carries a name, so you can see who is where",
               "Undo takes back your own work, not your teammate's",
               "Boards save themselves — close the tab and come back later",
             ].map((line) => (

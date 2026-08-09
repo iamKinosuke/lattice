@@ -59,7 +59,7 @@ export function DashboardView({
 
   const boards = data?.boards ?? NO_BOARDS;
 
-  const showSkeleton = pending && data === null;
+  const showSkeleton = pending && boards.length === 0;
   const showPending = useSlowRequest(pending, requestKey) && !showSkeleton;
 
   useEffect(() => {
